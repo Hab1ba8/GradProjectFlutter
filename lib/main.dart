@@ -320,6 +320,7 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   final _fullNameController = TextEditingController();
+  final _birthdateController = TextEditingController();
   final _familyTitleController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -327,9 +328,37 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000),
+      firstDate: DateTime(1950),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFF4CAF50),
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        _birthdateController.text = 
+            "${picked.day}/${picked.month}/${picked.year}";
+      });
+    }
+  }
+
   @override
   void dispose() {
     _fullNameController.dispose();
+    _birthdateController.dispose();
     _familyTitleController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
@@ -373,6 +402,35 @@ class _SignUpPageState extends State<SignUpPage> {
                 _buildTextField(
                   controller: _fullNameController,
                   hintText: 'Full Name',
+                ),
+                const SizedBox(height: 16),
+                
+                // Birthdate TextField
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: TextField(
+                    controller: _birthdateController,
+                    readOnly: true,
+                    onTap: () => _selectDate(context),
+                    decoration: const InputDecoration(
+                      hintText: 'Birthdate',
+                      hintStyle: TextStyle(color: Colors.grey),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
+                      suffixIcon: Icon(
+                        Icons.calendar_today,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 
